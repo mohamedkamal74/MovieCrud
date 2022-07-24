@@ -17,5 +17,10 @@ namespace MovieCrud.Controllers
         {
             return View(await _context.Movies.ToListAsync());
         }
+
+        public async Task<IActionResult> Create()
+        {
+            return View();
+        }
     }
 }
