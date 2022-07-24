@@ -1,7 +1,21 @@
 ﻿@model IEnumerable<Movie>
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Movies";
 }
 
-<h1>Index</h1>
+<h2 class="text-info"> <i class="bi bi-film"></i> Movies List</h2>
+<a class="btn btn-primary" asp-action="Create">Add movie</a>
+
+<div class="mt-4">
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            No Movies Added !
+        </div>
+    }
+    else
+    {
+        
+    }
+</div>
 
