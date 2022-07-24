@@ -1,0 +1,57 @@
+﻿@model MovieCrud.View_Models.MovieFormViewModel
+
+@{
+    ViewData["Title"] = "Movie Form";
+}
+
+
+
+<h4 class="text-info"> Create Movie</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group w-50">
+                <label asp-for="Year" class="control-label"></label>
+                <input asp-for="Year" class="form-control" value="" />
+                <span asp-validation-for="Year" class="text-danger"></span>
+            </div>
+            <div class="form-group w-50">
+                <label asp-for="Rate" class="control-label"></label>
+                <input asp-for="Rate" class="form-control" value="" />
+                <span asp-validation-for="Rate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StoreLine" class="control-label"></label>
+                <textarea asp-for="StoreLine" class="form-control" rows="5"></textarea>
+                <span asp-validation-for="StoreLine" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Poster" class="control-label"></label>
+                <input type="file" asp-for="Poster" class="form-control" accept="image/* />
+                <span asp-validation-for="Poster" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="GenreId" class="control-label"></label>
+                <select asp-for="GenreId" class="form-control" asp-items="@(new SelectList(Model.Genres,"Id","Name"))">
+                    <option value="">Select Genre .......</option>
+                </select>
+                <span asp-validation-for="GenreId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary" > <i class="bi bi-check"></i> Save</button>
+                <a asp-action="Index" class="btn btn-outline-dark"><i class="bi bi-x"></i> Back to List</a>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+
+

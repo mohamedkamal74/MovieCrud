@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieCrud.Data;
+using MovieCrud.View_Models;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MovieCrud.Controllers
@@ -20,7 +22,11 @@ namespace MovieCrud.Controllers
 
         public async Task<IActionResult> Create()
         {
-            return View();
+            var viewmodel = new MovieFormViewModel()
+            {
+                Genres = await _context.Genres.OrderBy(m=>m.Name).ToListAsync()
+            };
+            return View(viewmodel);
         }
     }
 }
