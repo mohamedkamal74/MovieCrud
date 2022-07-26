@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieCrud.Data;
+using MovieCrud.Models;
 using MovieCrud.View_Models;
 using System.Collections.Generic;
 using System.IO;
@@ -49,13 +50,38 @@ namespace MovieCrud.Controllers
             }
             var poster = files.FirstOrDefault();
             var allowExtentions = new List<string> { ".png", ".jpg" };
-            if (allowExtentions.Contains(Path.GetExtension(poster.FileName).ToLower()))
+            if (!allowExtentions.Contains(Path.GetExtension(poster.FileName).ToLower()))
             {
                 model.Genres = await _context.Genres.OrderBy(m => m.Name).ToListAsync();
                 ModelState.AddModelError("Poster", "only accept .png or .jpg ");
                 return View(model);
             }
-            return View();
+            if (poster.Length > 1048576)
+            {
+                model.Genres = await _context.Genres.OrderBy(m => m.Name).ToListAsync();
+                ModelState.AddModelError("Poster", "poster cannot be more than 1Mb ");
+                return View(model);
+            }
+            using var datastream = new MemoryStream();
+            await poster.CopyToAsync(datastream);
+
+            var movie = new Movie()
+            {
+                Title = model.Title,
+                Rate = model.Rate,
+                GenreId = model.GenreId,
+                StoreLine = model.StoreLine,
+                Year = model.Year,
+                Poster = datastream.ToArray()
+            };
+
+            _context.Movies.Add(movie);
+            _context.SaveChanges();
+            return RedirectToAction(nameof(Index));
+
+
         }
+          
+
     }
 }
