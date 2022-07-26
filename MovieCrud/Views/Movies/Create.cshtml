@@ -8,7 +8,7 @@
 
 <h4 class="text-info"> Create Movie</h4>
 <hr />
-<div class="row">
+<div class="row justify-content-between">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -51,7 +51,36 @@
             </div>
         </form>
     </div>
+    <div class="col-md-4">
+        <div id="poster-container" class="d-none">
+            <img src="" alt="Poster" class="img-thumbnail" />
+        </div>
+    </div>
 </div>
 
 
 
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script>
+        $(document).ready(function () {
+            $('#Poster').on('change', function () {
+                var selectedFile = $(this).val().split('\\').pop();
+                $(this).siblings('label').text(selectedFile);
+                var posterContainer = $('#poster-container');
+                var image = window.URL.createObjectURL(this.files[0]);
+                posterContainer.removeClass('d-none');
+                posterContainer.find('img').attr('src', image);
+            });
+            $('#Year').datepicker({
+                format: 'yyyy',
+                viewMode: 'years',
+                minViewMode: 'years',
+                autoclose: true,
+                startDate: new Date('1950-01-01'),
+                endDate: new Date()
+            });
+        });
+    </script>
+
+    }
