@@ -82,6 +82,30 @@ namespace MovieCrud.Controllers
 
         }
           
+        public async Task<IActionResult>Edit(int? id)
+        {
+            if(id == null)
+            {
+                return BadRequest();
 
+            }
+            var movie = await _context.Movies.FindAsync(id);
+            if(movie == null)
+            {
+                return NotFound();
+            }
+            var viewmodel = new MovieFormViewModel()
+            {
+                GenreId=movie.GenreId,
+                Title = movie.Title,
+                Id=movie.Id,
+                Poster=movie.Poster,
+                Rate=movie.Rate,
+                StoreLine=movie.StoreLine,
+                Year=movie.Year,
+                Genres=await _context.Genres.OrderBy(x=>x.Name).ToListAsync()
+            };
+            return View("MovieForm", viewmodel);
+        }
     }
 }
