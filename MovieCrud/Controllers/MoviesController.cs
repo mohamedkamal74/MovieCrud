@@ -29,7 +29,7 @@ namespace MovieCrud.Controllers
             {
                 Genres = await _context.Genres.OrderBy(m => m.Name).ToListAsync()
             };
-            return View(viewmodel);
+            return View("MovieForm", viewmodel);
         }
 
         [HttpPost]
@@ -39,14 +39,14 @@ namespace MovieCrud.Controllers
             if (!ModelState.IsValid)
             {
                 model.Genres = await _context.Genres.OrderBy(m => m.Name).ToListAsync();
-                return View(model);
+                return View("MovieForm", model);
             }
             var files = Request.Form.Files;
             if (!files.Any())
             {
                 model.Genres = await _context.Genres.OrderBy(m => m.Name).ToListAsync();
                 ModelState.AddModelError("Poster", "Please select  Movie Poster ");
-                return View(model);
+                return View("MovieForm", model);
             }
             var poster = files.FirstOrDefault();
             var allowExtentions = new List<string> { ".png", ".jpg" };
@@ -54,13 +54,13 @@ namespace MovieCrud.Controllers
             {
                 model.Genres = await _context.Genres.OrderBy(m => m.Name).ToListAsync();
                 ModelState.AddModelError("Poster", "only accept .png or .jpg ");
-                return View(model);
+                return View("MovieForm", model);
             }
             if (poster.Length > 1048576)
             {
                 model.Genres = await _context.Genres.OrderBy(m => m.Name).ToListAsync();
                 ModelState.AddModelError("Poster", "poster cannot be more than 1Mb ");
-                return View(model);
+                return View("MovieForm", model);
             }
             using var datastream = new MemoryStream();
             await poster.CopyToAsync(datastream);

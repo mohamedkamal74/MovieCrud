@@ -6,6 +6,7 @@ namespace MovieCrud.View_Models
 {
     public class MovieFormViewModel
     {
+        public int Id { get; set; }
         [Required, StringLength(250)]
         public string Title { get; set; }
         public int Year { get; set; }
