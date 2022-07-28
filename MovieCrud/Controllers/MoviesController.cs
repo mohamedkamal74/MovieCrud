@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using MovieCrud.Data;
 using MovieCrud.Models;
 using MovieCrud.View_Models;
+using NToastNotify;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,13 +14,15 @@ namespace MovieCrud.Controllers
     public class MoviesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IToastNotification _toastNotification;
         private long _maxAllowedPosterSize = 1048576;
         private new List<string> _allowExtentions = new List<string> { ".png", ".jpg" };
-        
 
-        public MoviesController(ApplicationDbContext context)
+
+        public MoviesController(ApplicationDbContext context, IToastNotification toastNotification)
         {
             _context = context;
+            _toastNotification = toastNotification;
         }
         public async Task<IActionResult> Index()
         {
@@ -79,46 +82,48 @@ namespace MovieCrud.Controllers
 
             _context.Movies.Add(movie);
             _context.SaveChanges();
+
+            _toastNotification.AddSuccessToastMessage("Movie Created Succesfully");
             return RedirectToAction(nameof(Index));
 
 
         }
-          
-        public async Task<IActionResult>Edit(int? id)
+
+        public async Task<IActionResult> Edit(int? id)
         {
-            if(id == null)
+            if (id == null)
             {
                 return BadRequest();
 
             }
             var movie = await _context.Movies.FindAsync(id);
-            if(movie == null)
+            if (movie == null)
             {
                 return NotFound();
             }
             var viewmodel = new MovieFormViewModel()
             {
-                GenreId=movie.GenreId,
+                GenreId = movie.GenreId,
                 Title = movie.Title,
-                Id=movie.Id,
-                Poster=movie.Poster,
-                Rate=movie.Rate,
-                StoreLine=movie.StoreLine,
-                Year=movie.Year,
-                Genres=await _context.Genres.OrderBy(x=>x.Name).ToListAsync()
+                Id = movie.Id,
+                Poster = movie.Poster,
+                Rate = movie.Rate,
+                StoreLine = movie.StoreLine,
+                Year = movie.Year,
+                Genres = await _context.Genres.OrderBy(x => x.Name).ToListAsync()
             };
             return View("MovieForm", viewmodel);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult>Edit(MovieFormViewModel model)
+        public async Task<IActionResult> Edit(MovieFormViewModel model)
         {
             if (!ModelState.IsValid)
             {
                 model.Genres = await _context.Genres.OrderBy(m => m.Name).ToListAsync();
                 return View("MovieForm", model);
             }
-            var movie=await _context.Movies.FindAsync(model.Id);
+            var movie = await _context.Movies.FindAsync(model.Id);
             if (movie == null)
             {
                 return NotFound();
@@ -127,7 +132,7 @@ namespace MovieCrud.Controllers
             if (files.Any())
             {
                 var poster = files.FirstOrDefault();
-                using var datastream= new MemoryStream();
+                using var datastream = new MemoryStream();
                 await poster.CopyToAsync(datastream);
 
                 model.Poster = datastream.ToArray();
@@ -146,14 +151,16 @@ namespace MovieCrud.Controllers
                 movie.Poster = model.Poster;
             }
 
-            movie.Title=model.Title;
-            movie.GenreId=model.GenreId;
-            movie.StoreLine=model.StoreLine;
-            movie.Year=model.Year;
+            movie.Title = model.Title;
+            movie.GenreId = model.GenreId;
+            movie.StoreLine = model.StoreLine;
+            movie.Year = model.Year;
             movie.Rate = model.Rate;
 
             _context.SaveChanges();
-            return RedirectToAction(nameof(Index));
+
+            _toastNotification.AddInfoToastMessage("Movie Updated Succesfully");
+                   return RedirectToAction(nameof(Index));
         }
     }
 }
