@@ -129,6 +129,8 @@ namespace MovieCrud.Controllers
                 var poster = files.FirstOrDefault();
                 using var datastream= new MemoryStream();
                 await poster.CopyToAsync(datastream);
+
+                model.Poster = datastream.ToArray();
                 if (!_allowExtentions.Contains(Path.GetExtension(poster.FileName).ToLower()))
                 {
                     model.Genres = await _context.Genres.OrderBy(m => m.Name).ToListAsync();
@@ -141,7 +143,7 @@ namespace MovieCrud.Controllers
                     ModelState.AddModelError("Poster", "poster cannot be more than 1Mb ");
                     return View("MovieForm", model);
                 }
-                movie.Poster = datastream.ToArray();
+                movie.Poster = model.Poster;
             }
 
             movie.Title=model.Title;
