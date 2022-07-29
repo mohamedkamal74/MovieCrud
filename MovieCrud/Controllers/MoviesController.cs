@@ -26,7 +26,7 @@ namespace MovieCrud.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Movies.ToListAsync());
+            return View(await _context.Movies.OrderByDescending(x=>x.Rate).ToListAsync());
         }
 
         public async Task<IActionResult> Create()
@@ -161,6 +161,29 @@ namespace MovieCrud.Controllers
 
             _toastNotification.AddInfoToastMessage("Movie Updated Succesfully");
                    return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult>Details(int? id)
+        {
+            if (id == null)
+                return BadRequest();
+            var movie = await _context.Movies.Include(g=>g.Genre).SingleOrDefaultAsync(x=>x.Id==id);
+            if (movie == null)
+                return NotFound();
+            return View(movie);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+                return BadRequest();
+            var movie = await _context.Movies.FindAsync(id);
+            if (movie == null)
+                return NotFound();
+           _context.Movies.Remove(movie);
+            _context.SaveChanges();
+            return Ok();
         }
     }
 }
